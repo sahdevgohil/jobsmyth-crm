@@ -254,6 +254,6 @@ Do **not** start Phase 2 until these are addressed and client reviews staging (P
 | V-03 | **Fixed** | `authStrictRateLimiter` on forgot/reset/invite | Forgot 429 test |
 | V-04 | **Fixed** | `revokeAllUserSessions` in `acceptInvite` | Invite revoke test |
 | V-05 | **Fixed** | pino-http `redact` via `PINO_HTTP_REDACT_PATHS` | `logging.test.ts` |
-| V-06 | **Partial** | Local `git init` + commit; **CI still unverified** until GitHub remote push yields a green Actions run | N/A |
+| V-06 | **Partial** | Local `git init` + root commit `1ad7a06` on `master`; **CI still unverified** until GitHub remote push yields a green Actions run | N/A |
 
 Also: audit Mongoose append-only hooks; Argon2id prefix assert; FE RequireAuth/permissions tests; PHASE1_REPORT statuses corrected.

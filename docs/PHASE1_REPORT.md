@@ -21,7 +21,7 @@ Phase 1 Foundation is **implemented in code** and verified locally (`lint`, `typ
 | Admin signs in | Met (after `npm run seed`) |
 | Admin creates salesperson | Met |
 | Salesperson signs in with restricted access | Met (tested: `403` on admin-only routes) |
-| CI green (lint / typecheck / test / build) | Met locally; GitHub Actions workflow added |
+| CI green (lint / typecheck / test / build) | **Not verified** — local gates pass; workflow present; needs GitHub remote + green Actions run (V-06) |
 | Deployed to staging | **Not met** — blocked on hosting decision (Q-027 / D-029) |
 
 No Phase 2+ business modules (leads, customers, appointments, etc.) were implemented or scaffolded.
