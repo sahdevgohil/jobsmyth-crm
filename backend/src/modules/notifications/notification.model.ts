@@ -8,6 +8,8 @@ export const NOTIFICATION_TYPES = [
   'appointment_changed',
   'appointment_reminder',
   'inspection_completed',
+  'storm_alert',
+  'storm_follow_up',
 ] as const;
 
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];

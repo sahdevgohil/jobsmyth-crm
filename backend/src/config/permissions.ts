@@ -89,11 +89,31 @@ export const PERMISSIONS = [
   'margins:view',
   'estimates:approve',
   'branding:manage',
+  'pipeline:read',
+  'pipeline:manage',
+  'stormEvents:read',
+  'stormEvents:search',
+  'stormEvents:manage',
+  'stormEvents:import',
+  'stormZones:read',
+  'stormZones:manage',
+  'stormAlerts:read',
+  'stormAlerts:manage',
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
 
 const adminPermissions: readonly Permission[] = [
+  'pipeline:read',
+  'pipeline:manage',
+  'stormEvents:read',
+  'stormEvents:search',
+  'stormEvents:manage',
+  'stormEvents:import',
+  'stormZones:read',
+  'stormZones:manage',
+  'stormAlerts:read',
+  'stormAlerts:manage',
   'users:manage',
   'users:read',
   'settings:read',
@@ -184,6 +204,11 @@ const adminPermissions: readonly Permission[] = [
 ];
 
 const salespersonPermissions: readonly Permission[] = [
+  'pipeline:read',
+  'stormEvents:read',
+  'stormEvents:search',
+  'stormZones:read',
+  'stormAlerts:read',
   'settings:read',
   'auth:change_password',
   'leads:read',

@@ -19,6 +19,7 @@ import {
   useEstimate,
   useEstimateCatalog,
   useUpdateEstimate,
+  useEstimateDecision,
   useVoidEstimate,
 } from '@/modules/estimates/api';
 import { useCreateProposal } from '@/modules/proposals/api';
@@ -44,6 +45,9 @@ export function EstimateDetailPage(): React.ReactElement {
   const update = useUpdateEstimate(id);
   const duplicate = useDuplicateEstimate(id);
   const voidEstimate = useVoidEstimate(id);
+  const decision = useEstimateDecision(id);
+  const [denyOpen, setDenyOpen] = useState(false);
+  const [denial, setDenial] = useState({ reason: '', note: '' });
   const createProposal = useCreateProposal();
   const [lines, setLines] = useState<LineDraft[]>([]);
   const [form, setForm] = useState({ discountDollars: '0.00', taxPercent: '0.00', notes: '' });
@@ -311,6 +315,39 @@ export function EstimateDetailPage(): React.ReactElement {
           </Button>
         ) : null}
       </div>
+
+      {canUpdate && row.status === 'sent' ? (
+        <section aria-label="Customer decision" className="space-y-3 rounded-lg border border-border bg-card p-4">
+          <h2 className="text-sm font-semibold">Customer decision</h2>
+          <p className="text-xs text-muted-foreground">Accepting moves this job to Estimates Accepted in the pipeline. Denying keeps the estimate on record and removes it from every active total.</p>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" disabled={decision.accept.isPending} onClick={() => { setError(null); void decision.accept.mutateAsync().then(() => setMsg('Estimate accepted.')).catch((err) => fail(err, 'Could not accept the estimate.')); }}>Mark accepted</Button>
+            <Button type="button" variant="outline" onClick={() => setDenyOpen((v) => !v)}>Mark denied</Button>
+          </div>
+          {denyOpen ? (
+            <div className="space-y-2">
+              <label className="block text-sm">Reason for denial
+                <input aria-label="Reason for denial" className="mt-1 h-10 w-full rounded-md border border-border bg-card px-3 text-sm" value={denial.reason} onChange={(e) => setDenial({ ...denial, reason: e.target.value })} /></label>
+              <label className="block text-sm">Customer note (optional)
+                <textarea aria-label="Customer note" className="mt-1 w-full rounded-md border border-border bg-card px-3 py-2 text-sm" rows={2} value={denial.note} onChange={(e) => setDenial({ ...denial, note: e.target.value })} /></label>
+              <Button type="button" variant="destructive" disabled={decision.deny.isPending} onClick={() => { setError(null); void decision.deny.mutateAsync({ reason: denial.reason, note: denial.note || undefined }).then(() => { setMsg('Estimate marked denied.'); setDenyOpen(false); }).catch((err) => fail(err, 'Could not deny the estimate.')); }}>Confirm denial</Button>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+      {row.status === 'denied' || row.status === 'rejected' ? (
+        <section aria-label="Denied estimate" className="space-y-2 rounded-lg border border-danger/30 bg-card p-4">
+          <h2 className="text-sm font-semibold text-danger">Denied{row.deniedAt ? ` on ${new Date(row.deniedAt).toLocaleDateString('en-US')}` : ''}</h2>
+          {row.denialReason ? <p className="text-sm">Reason: {row.denialReason}</p> : null}
+          {row.denialNote ? <p className="text-sm text-muted-foreground">{row.denialNote}</p> : null}
+          {canUpdate ? (
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" variant="outline" disabled={decision.reopen.isPending} onClick={() => { setError(null); void decision.reopen.mutateAsync('Reopened by staff').then(() => setMsg('Estimate reopened and back in Estimates Out.')).catch((err) => fail(err, 'Could not reopen the estimate.')); }}>Reopen estimate</Button>
+              {canCreate ? <Button type="button" variant="outline" onClick={() => { setError(null); void duplicate.mutateAsync('version').then(() => setMsg('A revised draft was created. Send it to put the job back in the pipeline.')).catch((err) => fail(err, 'Could not create a revision.')); }}>Create revised estimate</Button> : null}
+            </div>
+          ) : null}
+        </section>
+      ) : null}
 
       {msg ? <p className="text-sm text-brand">{msg}</p> : null}
       {error ? <p className="text-sm text-destructive">{error}</p> : null}

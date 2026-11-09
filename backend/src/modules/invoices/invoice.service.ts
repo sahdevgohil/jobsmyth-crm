@@ -1,3 +1,4 @@
+import { syncPipelineFromInvoice } from '../pipeline/pipeline.hooks.js';
 import { randomUUID } from 'node:crypto';
 import mongoose from 'mongoose';
 import {
@@ -340,6 +341,7 @@ export async function sendInvoice(input: {
     requestId: input.requestId,
     ip: input.ip,
   });
+  await syncPipelineFromInvoice(doc._id.toString(), { actorId: input.auth.userId, trigger: 'invoice_sent' });
   return { invoice: toInvoiceDto(doc), emailDelivery, qbo: qbo.status };
 }
 
@@ -368,6 +370,7 @@ export async function voidInvoice(input: {
     requestId: input.requestId,
     ip: input.ip,
   });
+  await syncPipelineFromInvoice(doc._id.toString(), { actorId: input.auth.userId, trigger: 'invoice_voided' });
   return toInvoiceDto(doc);
 }
 
@@ -440,6 +443,7 @@ export async function recordPayment(input: {
     requestId: input.requestId,
     ip: input.ip,
   });
+  await syncPipelineFromInvoice(doc._id.toString(), { actorId: input.auth.userId, trigger: 'payment_recorded' });
   return { payment: toPaymentDto(payment), invoice: toInvoiceDto(doc) };
 }
 

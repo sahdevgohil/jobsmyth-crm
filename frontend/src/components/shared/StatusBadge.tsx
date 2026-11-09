@@ -19,7 +19,7 @@ const STATUS_TONE: Record<string, Tone> = {
   draft: 'neutral', needed: 'neutral', not_requested: 'neutral', inactive: 'neutral', closed: 'neutral',
   not_configured: 'neutral', received: 'neutral', awaiting_approval: 'neutral', manual_only: 'neutral', normal: 'neutral',
   on_hold: 'warning', quality_review: 'warning', blocked: 'warning', pending: 'warning', high: 'warning', expired: 'warning',
-  overdue: 'danger', cancelled: 'danger', rejected: 'danger', lost: 'danger', failed: 'danger', urgent: 'danger',
+  overdue: 'danger', cancelled: 'danger', rejected: 'danger', denied: 'danger', lost: 'danger', failed: 'danger', urgent: 'danger',
   void: 'danger', no_show: 'danger', error: 'danger',
 };
 

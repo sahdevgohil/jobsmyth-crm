@@ -34,6 +34,7 @@ import {
   type EstimateStatus,
 } from './estimate.model.js';
 import { renderEstimateHtml } from './estimate.report.js';
+import { syncPipelineFromEstimate } from '../pipeline/pipeline.hooks.js';
 
 export type { AuthContext };
 
@@ -64,6 +65,12 @@ export type EstimateDto = {
   notes: string;
   validUntil: string | null;
   parentEstimateId: string | null;
+  sentAt: string | null;
+  acceptedAt: string | null;
+  deniedAt: string | null;
+  denialReason: string;
+  denialNote: string;
+  statusHistory: Array<{ from: string; to: string; at: string; by: string | null; reason: string; note: string }>;
   createdBy: string;
   createdAt: string;
   updatedAt: string;
@@ -78,7 +85,7 @@ function idOrNull(value: mongoose.Types.ObjectId | null | undefined): string | n
   return value ? value.toString() : null;
 }
 
-function toDto(doc: EstimateDocument): EstimateDto {
+export function toDto(doc: EstimateDocument): EstimateDto {
   return {
     id: doc._id.toString(),
     number: doc.number,
@@ -108,6 +115,12 @@ function toDto(doc: EstimateDocument): EstimateDto {
     notes: doc.notes ?? '',
     validUntil: doc.validUntil ? doc.validUntil.toISOString() : null,
     parentEstimateId: idOrNull(doc.parentEstimateId),
+    sentAt: doc.sentAt ? doc.sentAt.toISOString() : null,
+    acceptedAt: doc.acceptedAt ? doc.acceptedAt.toISOString() : null,
+    deniedAt: doc.deniedAt ? doc.deniedAt.toISOString() : null,
+    denialReason: doc.denialReason ?? '',
+    denialNote: doc.denialNote ?? '',
+    statusHistory: (doc.statusHistory ?? []).map((e) => ({ from: e.from, to: e.to, at: e.at.toISOString(), by: e.by ? e.by.toString() : null, reason: e.reason ?? '', note: e.note ?? '' })),
     createdBy: doc.createdBy.toString(),
     createdAt: doc.createdAt.toISOString(),
     updatedAt: doc.updatedAt.toISOString(),
@@ -123,7 +136,7 @@ export async function estimateScopeFilter(auth: AuthContext): Promise<Record<str
   return customerOrInspectionScopeFilter(auth);
 }
 
-async function findEstimateInScope(id: string, auth: AuthContext): Promise<EstimateDocument> {
+export async function findEstimateInScope(id: string, auth: AuthContext): Promise<EstimateDocument> {
   if (!mongoose.isValidObjectId(id)) throw notFound();
   const scope = await estimateScopeFilter(auth);
   const doc = await EstimateModel.findOne({ _id: id, ...scope });
@@ -419,8 +432,16 @@ export async function updateEstimate(input: {
   if (patch.validUntil !== undefined) {
     doc.set('validUntil', patch.validUntil ? new Date(patch.validUntil) : undefined);
   }
-  if (patch.status === 'sent') doc.status = 'sent';
+  const becameSent = patch.status === 'sent' && String(doc.status) !== 'sent';
+  if (patch.status === 'sent') {
+    if (becameSent) {
+      doc.statusHistory.push({ from: doc.status, to: 'sent', at: new Date(), by: new mongoose.Types.ObjectId(input.auth.userId), reason: '', note: '' });
+      doc.sentAt = new Date();
+    }
+    doc.status = 'sent';
+  }
   await doc.save();
+  if (becameSent) await syncPipelineFromEstimate(doc._id.toString(), { actorId: input.auth.userId, trigger: 'estimate_sent' });
 
   await auditBestEffort({
     auth: input.auth,

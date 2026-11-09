@@ -31,6 +31,8 @@ import {
   portalAuthRouter,
   portalDataRouter,
 } from './modules/portal/portal.routes.js';
+import { stormRouter } from './modules/storm/storm.routes.js';
+import { pipelineRouter } from './modules/pipeline/pipeline.routes.js';
 import { projectsRouter, tasksRouter } from './modules/projects/project.routes.js';
 import { proposalsRouter } from './modules/proposals/proposal.routes.js';
 import { searchRouter } from './modules/search/search.routes.js';
@@ -100,6 +102,8 @@ export function createApp() {
   app.use('/api/v1/material-requirements', materialRequirementsRouter);
   app.use('/api/v1/proposals', proposalsRouter);
   app.use('/api/v1/projects', projectsRouter);
+  app.use('/api/v1/pipeline', pipelineRouter);
+  app.use('/api/v1/storm', stormRouter);
   app.use('/api/v1/subcontractors', subcontractorsRouter);
   app.use('/api/v1/work-orders', workOrdersRouter);
   app.use('/api/v1/forms', formsRouter);

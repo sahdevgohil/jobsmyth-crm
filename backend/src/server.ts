@@ -1,6 +1,7 @@
 import { loadEnv } from './config/env.js';
 import { createApp } from './app.js';
 import { connectMongo } from './db/connection.js';
+import { startStormScheduler } from './modules/storm/storm.scheduler.js';
 import { createLogger } from './utils/logger.js';
 
 async function main(): Promise<void> {
@@ -13,6 +14,7 @@ async function main(): Promise<void> {
 
   const server = app.listen(port, () => {
     logger.info({ port }, 'API listening');
+    startStormScheduler();
   });
 
   const shutdown = async (signal: string) => {

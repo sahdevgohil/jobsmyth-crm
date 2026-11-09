@@ -1,3 +1,4 @@
+import { syncPipelineFromProject } from '../pipeline/pipeline.hooks.js';
 import { ActivityModel } from '../activities/activity.model.js';
 import { InvoiceModel, PaymentModel } from '../invoices/invoice.model.js';
 import { WorkOrderModel } from '../work-orders/work-order.model.js';
@@ -219,6 +220,7 @@ export async function createProject(input: {
     requestId: input.requestId,
     ip: input.ip,
   });
+  await syncPipelineFromProject(created._id.toString(), { actorId: input.auth.userId, trigger: 'project_created' });
   return toDto(created);
 }
 
@@ -274,6 +276,7 @@ export async function updateProject(input: {
     requestId: input.requestId,
     ip: input.ip,
   });
+  await syncPipelineFromProject(doc._id.toString(), { actorId: input.auth.userId, trigger: 'project_updated' });
   return toDto(doc);
 }
 
@@ -311,6 +314,7 @@ export async function changeProjectStatus(input: {
     requestId: input.requestId,
     ip: input.ip,
   });
+  await syncPipelineFromProject(doc._id.toString(), { actorId: input.auth.userId, trigger: `project_${input.status}` });
   return toDto(doc);
 }
 

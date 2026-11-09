@@ -22,6 +22,7 @@ import {
   usePipelineStages,
 } from '@/modules/leads/api';
 import { useLookups } from '@/modules/settings/api';
+import { StormHistoryPanel } from '@/modules/storm/StormHistoryPanel';
 import { ApiError } from '@/types/api';
 
 export function LeadDetailPage(): React.ReactElement {
@@ -37,6 +38,7 @@ export function LeadDetailPage(): React.ReactElement {
   const lostReasons = useLookups('lost_reason');
   const qc = useQueryClient();
   const canAssign = useHasPermission('leads:assign');
+  const canStorm = useHasPermission('stormEvents:read');
   const staff = useStaffDirectory();
   const [assignee, setAssignee] = useState('');
   const [note, setNote] = useState('');
@@ -253,6 +255,7 @@ export function LeadDetailPage(): React.ReactElement {
           </ul>
         </div>
       </div>
+      {canStorm ? <div className="mt-4"><StormHistoryPanel target={{ leadId: id }} /></div> : null}
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
     </div>
   );

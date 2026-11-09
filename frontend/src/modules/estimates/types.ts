@@ -1,4 +1,4 @@
-export type EstimateStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'expired' | 'void';
+export type EstimateStatus = 'draft' | 'sent' | 'accepted' | 'rejected' | 'denied' | 'expired' | 'void';
 export type LineItemKind = 'material' | 'labor' | 'other';
 
 export type EstimateLineItem = {
@@ -32,6 +32,12 @@ export type Estimate = {
   notes: string;
   validUntil: string | null;
   parentEstimateId: string | null;
+  sentAt?: string | null;
+  acceptedAt?: string | null;
+  deniedAt?: string | null;
+  denialReason?: string;
+  denialNote?: string;
+  statusHistory?: Array<{ from: string; to: string; at: string; by: string | null; reason: string; note: string }>;
   createdBy: string;
   createdAt: string;
   updatedAt: string;

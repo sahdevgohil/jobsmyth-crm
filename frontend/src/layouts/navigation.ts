@@ -1,5 +1,10 @@
 import {
   BarChart3,
+  BellRing,
+  CloudHail,
+  DatabaseZap,
+  Layers,
+  MapPin,
   Boxes,
   ClipboardPen,
   Smartphone,
@@ -12,6 +17,7 @@ import {
   ClipboardList,
   CreditCard,
   FileText,
+  Funnel,
   Hammer,
   Handshake,
   HardHat,
@@ -39,7 +45,13 @@ export type NavGroup = { label: string; items: NavItem[] };
 
 /** Sidebar structure. Items without a permission are visible to every signed-in staff user. */
 export const NAV_GROUPS: NavGroup[] = [
-  { label: 'Overview', items: [{ to: '/app', label: 'Dashboard', icon: LayoutDashboard, end: true }] },
+  {
+    label: 'Overview',
+    items: [
+      { to: '/app', label: 'Dashboard', icon: LayoutDashboard, end: true },
+      { to: '/app/pipeline', label: 'Pipeline', icon: Funnel, permission: 'pipeline:read' },
+    ],
+  },
   {
     label: 'Sales',
     items: [
@@ -92,6 +104,16 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { to: '/app/communications', label: 'Communications', icon: MessageSquare, permission: 'communications:read' },
       { to: '/app/after-sales', label: 'After-sales', icon: Hammer, permission: 'after_sales:read' },
+    ],
+  },
+  {
+    label: 'Storm intelligence',
+    items: [
+      { to: '/app/storm', label: 'Hail & wind search', icon: CloudHail, permission: 'stormEvents:search', end: true },
+      { to: '/app/storm/map', label: 'Storm map', icon: MapPin, permission: 'stormEvents:read' },
+      { to: '/app/storm/zones', label: 'Work zones', icon: Layers, permission: 'stormZones:read' },
+      { to: '/app/storm/alerts', label: 'Storm alerts', icon: BellRing, permission: 'stormAlerts:read' },
+      { to: '/app/storm/imports', label: 'Storm data imports', icon: DatabaseZap, permission: 'stormEvents:import' },
     ],
   },
   {

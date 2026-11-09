@@ -20,6 +20,7 @@ import {
   useUpdateCustomer,
 } from '@/modules/customers/api';
 import { usePipelineStages } from '@/modules/leads/api';
+import { StormHistoryPanel } from '@/modules/storm/StormHistoryPanel';
 import { ApiError } from '@/types/api';
 
 const date = (iso: string | null | undefined): string => (iso ? new Date(iso).toLocaleDateString('en-US') : '—');
@@ -211,6 +212,7 @@ export function CustomerDetailPage(): React.ReactElement {
   const archive = useArchiveCustomer();
   const [tab, setTab] = useState('overview');
   const can = {
+    storm: useHasPermission('stormEvents:read'),
     appt: useHasPermission('appointments:read'),
     insp: useHasPermission('inspections:read'),
     meas: useHasPermission('measurements:read'),
@@ -252,6 +254,7 @@ export function CustomerDetailPage(): React.ReactElement {
     { key: 'documents', label: 'Documents', show: can.files },
     { key: 'communications', label: 'Communications', show: can.comm },
     { key: 'aftersales', label: 'After-sales', show: can.after },
+    { key: 'storm', label: 'Storm history', show: can.storm },
   ].filter((t) => t.show);
 
   const name = customer.type === 'business' ? customer.companyName : `${customer.firstName} ${customer.lastName}`.trim();
@@ -280,6 +283,7 @@ export function CustomerDetailPage(): React.ReactElement {
       {state('overview', <Overview id={id} />)}
       {state('properties', <Properties id={id} />)}
       {state('leads', <Leads id={id} />)}
+      {state('storm', <StormHistoryPanel target={{ customerId: id }} />)}
       {state('appointments', <RelatedTable<Appt> queryKey="cust-appts" path="/appointments" params={q} rowHref={(r) => `/app/appointments/${r.id}`} emptyTitle="No appointments" columns={[
         { key: 't', header: 'Appointment', render: (r) => r.title },
         { key: 'w', header: 'When', render: (r) => dateTime(r.startAt) },

@@ -81,3 +81,8 @@ export const duplicateEstimateBodySchema = z
   .default({});
 
 export const estimateIdParamsSchema = z.object({ id: z.string().min(1) }).strict();
+
+export const denyEstimateBodySchema = z
+  .object({ reason: z.string().trim().min(3, 'Give a reason.').max(300), note: z.string().trim().max(2000).optional() })
+  .strict();
+export const reopenEstimateBodySchema = z.object({ reason: z.string().trim().max(300).optional() }).strict();

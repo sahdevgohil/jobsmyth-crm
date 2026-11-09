@@ -45,6 +45,12 @@ import { MeasurementNewPage } from '@/pages/MeasurementNewPage';
 import { MaterialsPage } from '@/pages/MaterialsPage';
 import { MeasurementsPage } from '@/pages/MeasurementsPage';
 import { IntegrationsPage } from '@/pages/IntegrationsPage';
+import { StormAlertsPage } from '@/pages/StormAlertsPage';
+import { StormImportsPage } from '@/pages/StormImportsPage';
+import { StormMapPage } from '@/pages/StormMapPage';
+import { StormSearchPage } from '@/pages/StormSearchPage';
+import { StormZonesPage } from '@/pages/StormZonesPage';
+import { PipelineDashboardPage } from '@/pages/PipelineDashboardPage';
 import { PaymentsPage } from '@/pages/PaymentsPage';
 import { PropertiesPage } from '@/pages/PropertiesPage';
 import { SubcontractorsPage } from '@/pages/SubcontractorsPage';
@@ -141,6 +147,24 @@ export function AppRouter(): React.ReactElement {
                     </Route>
                     <Route element={<RequirePermission permission="subcontractors:read" />}>
                       <Route path="subcontractors" element={<SubcontractorsPage />} />
+                    </Route>
+                    <Route element={<RequirePermission permission="stormEvents:search" />}>
+                      <Route path="storm" element={<StormSearchPage />} />
+                    </Route>
+                    <Route element={<RequirePermission permission="stormEvents:read" />}>
+                      <Route path="storm/map" element={<StormMapPage />} />
+                    </Route>
+                    <Route element={<RequirePermission permission="stormZones:read" />}>
+                      <Route path="storm/zones" element={<StormZonesPage />} />
+                    </Route>
+                    <Route element={<RequirePermission permission="stormAlerts:read" />}>
+                      <Route path="storm/alerts" element={<StormAlertsPage />} />
+                    </Route>
+                    <Route element={<RequirePermission permission="stormEvents:import" />}>
+                      <Route path="storm/imports" element={<StormImportsPage />} />
+                    </Route>
+                    <Route element={<RequirePermission permission="pipeline:read" />}>
+                      <Route path="pipeline" element={<PipelineDashboardPage />} />
                     </Route>
                     <Route element={<RequirePermission permission="payments:read" />}>
                       <Route path="payments" element={<PaymentsPage />} />

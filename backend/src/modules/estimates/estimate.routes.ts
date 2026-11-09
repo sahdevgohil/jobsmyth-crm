@@ -5,6 +5,8 @@ import { requirePasswordChanged } from '../../middleware/require-password-change
 import { validate } from '../../middleware/validate.js';
 import * as controller from './estimate.controller.js';
 import {
+  denyEstimateBodySchema,
+  reopenEstimateBodySchema,
   createEstimateBodySchema,
   duplicateEstimateBodySchema,
   estimateIdParamsSchema,
@@ -81,5 +83,32 @@ estimatesRouter.post(
   validate({ params: estimateIdParamsSchema }),
   (req, res, next) => {
     void controller.voidOne(req, res).catch(next);
+  },
+);
+
+estimatesRouter.post(
+  '/:id/accept',
+  authorize('estimates:update'),
+  validate({ params: estimateIdParamsSchema }),
+  (req, res, next) => {
+    void controller.accept(req, res).catch(next);
+  },
+);
+
+estimatesRouter.post(
+  '/:id/deny',
+  authorize('estimates:update'),
+  validate({ params: estimateIdParamsSchema, body: denyEstimateBodySchema }),
+  (req, res, next) => {
+    void controller.deny(req, res).catch(next);
+  },
+);
+
+estimatesRouter.post(
+  '/:id/reopen',
+  authorize('estimates:update'),
+  validate({ params: estimateIdParamsSchema, body: reopenEstimateBodySchema }),
+  (req, res, next) => {
+    void controller.reopen(req, res).catch(next);
   },
 );

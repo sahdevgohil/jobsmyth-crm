@@ -116,3 +116,18 @@ export async function openEstimatePreview(id: string, accessToken: string | null
   const url = URL.createObjectURL(blob);
   window.open(url, '_blank', 'noopener,noreferrer');
 }
+
+/** Customer decision on a sent estimate. Each call moves the job in the pipeline and is recorded in the estimate history. */
+export function useEstimateDecision(id: string) {
+  const qc = useQueryClient();
+  const done = (): void => {
+    void qc.invalidateQueries({ queryKey: estimateKeys.all });
+    void qc.invalidateQueries({ queryKey: ['pipeline'] });
+  };
+  const post = (path: string, body: unknown) => apiFetch<{ data: Estimate }>(`/estimates/${id}/${path}`, { method: 'POST', body: JSON.stringify(body) });
+  return {
+    accept: useMutation({ mutationFn: () => post('accept', {}), onSuccess: done }),
+    deny: useMutation({ mutationFn: (v: { reason: string; note?: string }) => post('deny', v), onSuccess: done }),
+    reopen: useMutation({ mutationFn: (reason?: string) => post('reopen', { reason }), onSuccess: done }),
+  };
+}

@@ -24,7 +24,7 @@ export function EstimatesPage(): React.ReactElement {
       description="Draft, version and print customer estimates. Totals are calculated by the server."
       queryKey="estimates"
       path="/estimates"
-      filters={[{ key: 'status', label: 'Status', options: ['draft', 'sent', 'accepted', 'rejected', 'expired', 'void'].map((s) => ({ value: s, label: statusLabel(s) })) }]}
+      filters={[{ key: 'status', label: 'Status', options: ['draft', 'sent', 'accepted', 'denied', 'expired', 'void'].map((s) => ({ value: s, label: statusLabel(s) })) }]}
       actions={canCreate ? <Button asChild><Link to="/app/estimates/new">New estimate</Link></Button> : null}
       customerIdOf={(e) => e.customerId}
       rowHref={(e) => `/app/estimates/${e.id}`}

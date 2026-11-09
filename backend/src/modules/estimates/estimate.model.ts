@@ -6,6 +6,7 @@ export const ESTIMATE_STATUSES = [
   'sent',
   'accepted',
   'rejected',
+  'denied',
   'expired',
   'void',
 ] as const;
@@ -23,6 +24,19 @@ const lineItemSchema = new Schema(
     materialCostCents: { type: Number, required: true, min: 0, default: 0 },
     /** Always computed by the backend; never trusted from clients. */
     amountCents: { type: Number, required: true, min: 0 },
+  },
+  { _id: false },
+);
+
+/** One entry per status change; never edited or removed. */
+const statusEventSchema = new Schema(
+  {
+    from: { type: String, required: true },
+    to: { type: String, required: true },
+    at: { type: Date, required: true },
+    by: { type: Schema.Types.ObjectId, ref: 'User' },
+    reason: { type: String, default: '' },
+    note: { type: String, default: '' },
   },
   { _id: false },
 );
@@ -45,6 +59,14 @@ const estimateSchema = new Schema(
     totalCents: { type: Number, required: true, min: 0, default: 0 },
     notes: { type: String, default: '' },
     validUntil: { type: Date },
+    sentAt: { type: Date },
+    acceptedAt: { type: Date },
+    acceptedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    deniedAt: { type: Date },
+    deniedBy: { type: Schema.Types.ObjectId, ref: 'User' },
+    denialReason: { type: String, default: '' },
+    denialNote: { type: String, default: '' },
+    statusHistory: { type: [statusEventSchema], default: [] },
     parentEstimateId: { type: Schema.Types.ObjectId, ref: 'Estimate' },
     /** Set when priced from a catalog: which catalog version/package/inputs produced these lines (snapshot). */
     pricingSource: { type: Schema.Types.Mixed },

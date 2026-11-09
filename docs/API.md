@@ -192,3 +192,33 @@ All routes need a staff session. Errors from Google use stable codes (`SOLAR_NOT
 | GET `/estimate-inputs` | measurements:read | Now also `selectedWastePercent`, `summary`, `suggestedQuantities` (verified vs unverified), `materials`, `geometryStatus` |
 
 Settings gained `includeImagery`, `imageryRetentionDays`, `materialRules`. Superseded revisions reject edits with 409.
+
+## Pipeline (`/api/v1/pipeline`)
+| Endpoint | Permission | Notes |
+|---|---|---|
+| GET `/summary` | pipeline:read | `stages[]` (count, value, share of active), `totalActiveCents`, `activeJobCount`, `denied`, `calculation`, `limitations`. Filters: `from`, `to`, `salespersonId`, `projectManagerId`, `jobType`, `paymentStatus` (none, unpaid, partial, overdue, paid), `asOf` |
+| GET `/jobs` | pipeline:read | the jobs behind a stage: `stage` (a stage key or `denied`), `search`, `sort` (stageDate, customer, value, outstanding, paid, number), `dir`, `page`, `pageSize`; returns `data`, `meta` and `totals` (equal to the card) |
+| GET `/filter-options` | pipeline:read | salespeople, project managers and job types present in your scope |
+| GET `/jobs/:id` | pipeline:read | job, full stage history, change orders |
+| POST `/jobs/:id/move` | pipeline:manage | `{ toStage, reason }`; exceptions need a reason |
+| POST `/jobs/:id/change-orders` | pipeline:manage | `{ description, amountCents }` (signed, non-zero) |
+| POST `/backfill` | pipeline:manage | builds jobs for existing estimates and projects; repeatable |
+
+Estimates: `POST /estimates/:id/accept`, `POST /estimates/:id/deny` (`{ reason, note? }`), `POST /estimates/:id/reopen` (`{ reason? }`), all `estimates:update`. Estimate objects now include `sentAt`, `acceptedAt`, `deniedAt`, `denialReason`, `denialNote`, `statusHistory`.
+
+## Storm intelligence (`/api/v1/storm`)
+| Endpoint | Permission | Notes |
+|---|---|---|
+| GET `/status` | stormEvents:read | thresholds, radii, geocoder, alert channel status, map tiles, sources, MRMS flag |
+| GET `/search` | stormEvents:search | `address` or `lat`+`lng` or `propertyId`; `radius` 1/3/5/10; `from`, `to`, `types`, `minHail`, `minWind`, `sources`, `includeUnknownSpeed`, `dateOfLoss`, `state` (regional context), `sort`, `page`, `pageSize` |
+| GET `/geocode` | stormEvents:search | `address` |
+| GET `/events/map` | stormEvents:read | `bbox=w,s,e,n` or `lat,lng,radius`; same filters; capped, with `truncated` |
+| GET `/events/:id` | stormEvents:read | one report with source, precision, narrative |
+| GET `/history` | stormEvents:read | `propertyId`, `customerId`, `leadId` or `projectId` + `radius` |
+| GET `/imports`; POST `/imports/backfill`, `/imports/spc`, `/imports/daily` | stormEvents:import | ingestion status and starts (202) |
+| GET/POST `/zones`, GET/PATCH/DELETE `/zones/:id`, GET `/zones/rankings`, POST `/zones/:id/assign` | read: stormZones:read; write: stormZones:manage | |
+| GET/POST/PATCH/DELETE `/alerts/rules[/:id]` | stormAlerts:manage | |
+| GET `/alerts/history`, GET `/alerts/channels` | stormAlerts:read | |
+| POST `/alerts/evaluate-recent` | stormAlerts:manage | re-check the last 3 days (duplicates are skipped) |
+| GET `/follow-ups`; POST `/follow-ups/:id/review`, `/dismiss`, `/activities` | stormEvents:read / activities:create | |
+| POST `/follow-ups/scan` | stormZones:manage | |

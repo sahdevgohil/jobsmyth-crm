@@ -6,8 +6,11 @@ import {
   getValidatedParams,
   getValidatedQuery,
 } from '../../middleware/validate.js';
+import { acceptEstimate, denyEstimate, reopenEstimate } from './estimate.lifecycle.js';
 import * as estimateService from './estimate.service.js';
 import type {
+  denyEstimateBodySchema,
+  reopenEstimateBodySchema,
   createEstimateBodySchema,
   duplicateEstimateBodySchema,
   estimateIdParamsSchema,
@@ -102,4 +105,21 @@ export async function preview(req: Request, res: Response): Promise<void> {
   res.setHeader('Content-Type', 'text/html; charset=utf-8');
   res.setHeader('Cache-Control', 'no-store');
   res.send(html);
+}
+
+export async function accept(req: Request, res: Response): Promise<void> {
+  const params = getValidatedParams<z.infer<typeof estimateIdParamsSchema>>(req);
+  res.status(200).json({ data: await acceptEstimate({ auth: authCtx(req), id: params.id, requestId: req.requestId, ip: req.ip }) });
+}
+
+export async function deny(req: Request, res: Response): Promise<void> {
+  const params = getValidatedParams<z.infer<typeof estimateIdParamsSchema>>(req);
+  const body = getValidatedBody<z.infer<typeof denyEstimateBodySchema>>(req);
+  res.status(200).json({ data: await denyEstimate({ auth: authCtx(req), id: params.id, reason: body.reason, note: body.note, requestId: req.requestId, ip: req.ip }) });
+}
+
+export async function reopen(req: Request, res: Response): Promise<void> {
+  const params = getValidatedParams<z.infer<typeof estimateIdParamsSchema>>(req);
+  const body = getValidatedBody<z.infer<typeof reopenEstimateBodySchema>>(req);
+  res.status(200).json({ data: await reopenEstimate({ auth: authCtx(req), id: params.id, reason: body.reason, requestId: req.requestId, ip: req.ip }) });
 }

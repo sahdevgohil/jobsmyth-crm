@@ -1,3 +1,4 @@
+import { acceptEstimate, denyEstimate } from '../estimates/estimate.lifecycle.js';
 import mongoose from 'mongoose';
 import { assertEstimatePublishable } from '../pricing/pricing.service.js';
 import { recordAudit } from '../../services/audit.js';
@@ -373,6 +374,8 @@ export async function acceptProposal(input: {
     requestId: input.requestId,
     ip: input.ip,
   });
+  // The customer approved the proposal, so the estimate behind it is accepted too (best effort; the proposal result stands either way).
+  await acceptEstimate({ auth: input.auth, id: doc.estimateId.toString(), source: 'proposal', requestId: input.requestId, ip: input.ip }).catch(() => undefined);
   return toDto(doc);
 }
 
@@ -401,6 +404,7 @@ export async function rejectProposal(input: {
     requestId: input.requestId,
     ip: input.ip,
   });
+  await denyEstimate({ auth: input.auth, id: doc.estimateId.toString(), reason: 'Proposal rejected by the customer', requestId: input.requestId, ip: input.ip }).catch(() => undefined);
   return toDto(doc);
 }
 

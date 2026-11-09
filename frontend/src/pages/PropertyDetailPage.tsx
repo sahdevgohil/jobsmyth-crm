@@ -12,6 +12,7 @@ import { useHasPermission } from '@/lib/permissions';
 import { statusLabel } from '@/lib/status';
 import { useCustomerSummary } from '@/modules/customers/api';
 import type { Property } from '@/modules/customers/types';
+import { StormHistoryPanel } from '@/modules/storm/StormHistoryPanel';
 import { apiFetch } from '@/services/http';
 import { ApiError } from '@/types/api';
 
@@ -28,6 +29,7 @@ export function PropertyDetailPage(): React.ReactElement {
   });
   const customerId = query.data?.data.customerId ?? '';
   const customer = useCustomerSummary(customerId);
+  const canStorm = useHasPermission('stormEvents:read');
   const canInsp = useHasPermission('inspections:read');
   const canMeas = useHasPermission('measurements:read');
   const canProj = useHasPermission('projects:read');
@@ -48,6 +50,7 @@ export function PropertyDetailPage(): React.ReactElement {
     { key: 'measurements', label: 'Measurements', show: canMeas },
     { key: 'projects', label: 'Projects', show: canProj },
     { key: 'files', label: 'Photos & documents', show: canFiles },
+    { key: 'storm', label: 'Storm history', show: canStorm },
   ].filter((t) => t.show);
   const panel = (key: string, node: React.ReactNode): React.ReactElement | null => (tab === key ? <TabPanel id={key}>{node}</TabPanel> : null);
 
@@ -111,6 +114,7 @@ export function PropertyDetailPage(): React.ReactElement {
           { key: 'd', header: 'Planned start', render: (r) => date(r.plannedStartAt), hideOnMobile: true },
         ]} />
       ))}
+      {panel('storm', <StormHistoryPanel target={{ propertyId: p.id }} />)}
       {panel('files', <FilePanel link={{ propertyId: p.id }} category="photo" canUpload={canUpload} />)}
     </div>
   );

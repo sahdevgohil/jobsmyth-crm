@@ -46,3 +46,16 @@ Honest status as of the current codebase. **Adapters exist; live provider calls 
 | Setup | `docs/GOOGLE_SOLAR_SETUP.md`; workflow `docs/MEASUREMENT_WORKFLOW.md` |
 
 EagleView, HOVER and Roofr are **not** used and no paid measurement API is required. The EagleView developer page could not be read (it renders client-side), so no EagleView adapter was written; nothing was assumed about its endpoints.
+
+## NOAA storm data, geocoding, maps, alerts
+| | |
+|---|---|
+| NOAA SPC daily reports | `https://www.spc.noaa.gov/climo/reports/`, no credentials. Imported about hourly by the in-process scheduler and on demand. See `NOAA_DATA_SOURCES.md` |
+| NOAA NCEI Storm Events | `https://www.ncei.noaa.gov/pub/data/swdi/stormevents/csvfiles/`, no credentials. Backfilled from 2009 by an administrator |
+| Geocoding | `STORM_GEOCODER` (`auto`, `google`, `census`, `none`). Google uses `GOOGLE_SOLAR_API_KEY` (server only; the Geocoding API must be enabled). Census needs no key |
+| Map tiles | OpenStreetMap by default; `STORM_MAP_TILE_URL` and `STORM_MAP_ATTRIBUTION` to change |
+| In-app alerts | working |
+| Email and SMS alerts | **not configured**: the adapters return `not_configured` and the alert history records exactly that |
+| MRMS | not integrated |
+
+The status of each is shown on Hail & wind search, Storm alerts and Storm data imports. Details: `HAIL_WIND_INTELLIGENCE.md`.

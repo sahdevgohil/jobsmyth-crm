@@ -37,6 +37,7 @@ import { useStaffDirectory } from '@/modules/users/api';
 import { apiFetch } from '@/services/http';
 import { ApiError } from '@/types/api';
 import { PROJECT_NEXT } from '@/lib/project-status';
+import { StormHistoryPanel } from '@/modules/storm/StormHistoryPanel';
 
 const date = (iso: string | null | undefined): string => (iso ? new Date(iso).toLocaleDateString('en-US') : '—');
 const dateTime = (iso: string): string =>
@@ -412,6 +413,7 @@ export function ProjectDetailPage(): React.ReactElement {
   const canInvoice = useHasPermission('invoices:create');
   const canUpload = useHasPermission('files:create');
   const canFiles = useHasPermission('files:read');
+  const canStorm = useHasPermission('stormEvents:read');
   const canInvRead = useHasPermission('invoices:read');
   const canWo = useHasPermission('work_orders:read');
   const canMat = useHasPermission('materials:read');
@@ -433,6 +435,7 @@ export function ProjectDetailPage(): React.ReactElement {
     { key: 'documents', label: 'Documents', show: canFiles },
     { key: 'finance', label: 'Finance', show: canInvRead },
     { key: 'activity', label: 'Activity', show: true },
+    { key: 'storm', label: 'Storm history', show: canStorm },
   ].filter((t) => t.show);
   const panel = (key: string, node: React.ReactNode): React.ReactElement | null => (tab === key ? <TabPanel id={key}>{node}</TabPanel> : null);
 
@@ -475,6 +478,7 @@ export function ProjectDetailPage(): React.ReactElement {
       {panel('documents', <FilePanel link={{ projectId: p.id }} canUpload={canUpload} allowCustomerVisibility />)}
       {panel('finance', <Finance p={p} />)}
       {panel('activity', <Activity id={p.id} />)}
+      {panel('storm', <StormHistoryPanel target={{ projectId: p.id }} />)}
     </div>
   );
 }
