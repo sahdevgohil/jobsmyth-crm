@@ -169,6 +169,7 @@ export async function refresh(
   const claimed = await RefreshSessionModel.findOneAndUpdate(
     {
       tokenHash,
+      principalType: 'user',
       revokedAt: { $exists: false },
       expiresAt: { $gt: now },
     },

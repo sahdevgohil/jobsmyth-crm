@@ -51,6 +51,11 @@ export async function apiFetch<T>(
     if (newToken) {
       return apiFetch<T>(path, options, false);
     }
+    const body = (await res.json().catch(() => null)) as ApiErrorBody | null;
+    throw new ApiError(
+      401,
+      body?.error ?? { code: 'UNAUTHORIZED', message: 'Session expired. Please sign in again.' },
+    );
   }
 
   if (res.status === 204) {

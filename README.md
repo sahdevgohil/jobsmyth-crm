@@ -2,7 +2,7 @@
 
 A web-based CRM and business management system for **Legacy Construction Group** (Texas, USA), covering leads, customers and properties, appointments, inspections and photo reports, roof measurements, estimates and proposals, materials, projects and subcontractors, invoices and payments, accounting sync, communication, a customer portal, after-sales and analytics.
 
-> **Status:** Phase 1 Foundation + hardening V-01–V-05 implemented (auth, users, settings, audit). Local git initialized; **GitHub Actions is not green until a remote exists and a workflow run succeeds**. Staging deploy blocked on Q-027 / D-029. Password-reset/invite **email delivery** disabled until INT-03 — temp-password onboarding with backend `mustChangePassword` enforcement.
+> **Status:** Phase 1 Foundation + **Phase 2 Core CRM** (dashboard, leads/pipeline, customers/properties, website lead intake, notifications). Staging deploy still blocked on Q-027 / D-029. Website form wiring blocked on Q-006 / INT-09 — public intake API is ready (`POST /api/v1/public/website-leads` + `WEBSITE_LEAD_INTAKE_SECRET`). CSV import (MIG) not implemented (Q-021). Email delivery disabled until INT-03.
 
 ## Documentation
 
@@ -16,6 +16,14 @@ A web-based CRM and business management system for **Legacy Construction Group**
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Decisions, open questions, assumptions, integration status |
 | [docs/PHASE1_REPORT.md](docs/PHASE1_REPORT.md) | Phase 1 Foundation delivery report (coverage, tests, blockers) |
 | [docs/PHASE1_VERIFICATION_REPORT.md](docs/PHASE1_VERIFICATION_REPORT.md) | Independent Phase 1 verification & hardening review |
+| [docs/PHASE2_REPORT.md](docs/PHASE2_REPORT.md) | Phase 2 Core CRM delivery report (leads, customers, dashboard, intake) |
+| [docs/PHASE2_VERIFICATION_REPORT.md](docs/PHASE2_VERIFICATION_REPORT.md) | Independent Phase 2 verification (read-only) |
+| [docs/API.md](docs/API.md) | REST API version, routes, auth, business rules |
+| [docs/DATABASE.md](docs/DATABASE.md) | MongoDB collections, relationships, integrity |
+| [docs/INTEGRATIONS.md](docs/INTEGRATIONS.md) | Provider adapters and honest configuration status |
+| [docs/TESTING.md](docs/TESTING.md) | Unit, API, and Playwright commands |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Runtime, env, build, security checklist |
+| [IMPLEMENTATION_STATUS.md](IMPLEMENTATION_STATUS.md) | Live feature status checkpoint |
 
 ## Technology Stack (summary)
 
@@ -81,6 +89,7 @@ cp frontend/.env.example frontend/.env
 | `CORS_ORIGINS` | Comma-separated allowed origins | Phase 1 |
 | `MONGODB_URI` | MongoDB connection string | Phase 1 |
 | `JWT_ACCESS_SECRET` | Access-token signing secret (≥ 32 random bytes) | Phase 1 |
+| `WEBSITE_LEAD_INTAKE_SECRET` | Shared secret for `X-Website-Lead-Secret` on public website lead intake | Phase 2 |
 | `JWT_PORTAL_SECRET` | Portal access-token signing secret | Phase 8 |
 | `REFRESH_TOKEN_TTL_DAYS` | Refresh session lifetime | Phase 1 |
 | `ENCRYPTION_KEY` | AES-256-GCM key for stored integration tokens | First OAuth integration |
@@ -125,6 +134,16 @@ npm run format           # Prettier
 ```
 
 CI runs `lint`, `typecheck`, `test` and `build` on every pull request; merges to `main` require green CI.
+
+## Demo environment (development only)
+
+```bash
+npm run dev:db -w backend        # only if you have no local MongoDB
+npm run seed:demo -w backend     # idempotent demo data; prints demo logins
+npm run seed:demo:reset -w backend
+```
+
+See [docs/DEMO_DATA.md](docs/DEMO_DATA.md). Never run against production (the scripts refuse).
 
 ## Build
 

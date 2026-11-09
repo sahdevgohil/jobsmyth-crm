@@ -258,7 +258,7 @@ describe('AUTH routes', () => {
   });
 
   it('blocks APIs until password is changed (V-02 / AUTH-007)', async () => {
-    const { password } = await createUser({
+    const { password, user } = await createUser({
       email: 'temp@example.com',
       mustChangePassword: true,
     });
@@ -266,6 +266,7 @@ describe('AUTH routes', () => {
       .post('/api/v1/auth/login')
       .send({ email: 'temp@example.com', password });
     const token = login.body.data.accessToken as string;
+    expect(login.body.data.user.mustChangePassword).toBe(true);
 
     const blocked = await request(app)
       .get('/api/v1/settings/company')
@@ -275,12 +276,35 @@ describe('AUTH routes', () => {
 
     const me = await request(app).get('/api/v1/auth/me').set('Authorization', `Bearer ${token}`);
     expect(me.status).toBe(200);
+    expect(me.body.data.mustChangePassword).toBe(true);
+
+    const wrongCurrent = await request(app)
+      .post('/api/v1/auth/password/change')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ currentPassword: 'WrongPassword1!', newPassword: 'ChangedPass123!' });
+    expect(wrongCurrent.status).toBe(400);
+    expect(wrongCurrent.body.error.code).toBe('INVALID_PASSWORD');
+
+    const tooShort = await request(app)
+      .post('/api/v1/auth/password/change')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ currentPassword: password, newPassword: 'short' });
+    expect(tooShort.status).toBe(400);
 
     const change = await request(app)
       .post('/api/v1/auth/password/change')
       .set('Authorization', `Bearer ${token}`)
       .send({ currentPassword: password, newPassword: 'ChangedPass123!' });
     expect(change.status).toBe(204);
+
+    const { UserModel } = await import('../users/user.model.js');
+    const stored = await UserModel.findById(user._id);
+    expect(stored?.mustChangePassword).toBe(false);
+    expect(stored?.passwordHash).toMatch(/^\$argon2id\$/);
+
+    const meAfter = await request(app).get('/api/v1/auth/me').set('Authorization', `Bearer ${token}`);
+    expect(meAfter.status).toBe(200);
+    expect(meAfter.body.data.mustChangePassword).toBe(false);
 
     const allowed = await request(app)
       .get('/api/v1/settings/company')

@@ -17,8 +17,11 @@
     "lint": "npm run lint -w backend && npm run lint -w frontend",
     "typecheck": "npm run typecheck -w backend && npm run typecheck -w frontend",
     "test": "npm run test -w backend && npm run test -w frontend",
+    "test:e2e": "npm run test:e2e -w frontend",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
-    "seed": "npm run seed -w backend"
+    "seed": "npm run seed -w backend",
+    "sync:shared": "node scripts/sync-shared.mjs",
+    "check:shared": "node scripts/sync-shared.mjs --check"
   },
   "devDependencies": {
     "prettier": "^3.5.3"

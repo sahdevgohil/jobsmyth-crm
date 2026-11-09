@@ -1,6 +1,6 @@
 import { useEffect, type ReactNode } from 'react';
-import { bootstrapSession, meRequest } from '@/modules/auth/api';
-import { useAuthStore } from '@/stores/auth-store';
+import * as authApi from '@/modules/auth/api';
+import { readRememberedProfile, useAuthStore } from '@/stores/auth-store';
 
 export function SessionBootstrap({ children }: { children: ReactNode }): React.ReactElement {
   const setSession = useAuthStore((s) => s.setSession);
@@ -11,8 +11,14 @@ export function SessionBootstrap({ children }: { children: ReactNode }): React.R
     let cancelled = false;
     void (async () => {
       try {
-        const token = await bootstrapSession();
+        const token = await authApi.bootstrapSession();
         if (!token) {
+          const remembered = authApi.lastBootstrapWasNetworkFailure ? readRememberedProfile() : null;
+          if (!cancelled && remembered) {
+            useAuthStore.getState().setOfflineSession(remembered);
+            setBootstrapped(true);
+            return;
+          }
           if (!cancelled) {
             clearSession();
             setBootstrapped(true);
@@ -20,12 +26,18 @@ export function SessionBootstrap({ children }: { children: ReactNode }): React.R
           return;
         }
         useAuthStore.getState().setAccessToken(token);
-        const me = await meRequest();
+        const me = await authApi.meRequest();
         if (!cancelled) {
           setSession(token, me.data);
           setBootstrapped(true);
         }
       } catch {
+        const remembered = authApi.lastBootstrapWasNetworkFailure ? readRememberedProfile() : null;
+        if (!cancelled && remembered) {
+          useAuthStore.getState().setOfflineSession(remembered);
+          setBootstrapped(true);
+          return;
+        }
         if (!cancelled) {
           clearSession();
           setBootstrapped(true);

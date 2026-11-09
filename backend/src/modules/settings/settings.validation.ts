@@ -60,3 +60,59 @@ export const lookupIdParamsSchema = z
     id: z.string().min(1),
   })
   .strict();
+
+export const createPipelineStageBodySchema = z
+  .object({
+    name: z.string().trim().min(1).max(80),
+    category: z.enum(['open', 'won', 'lost']),
+    order: z.number().int().optional(),
+  })
+  .strict();
+
+export const updatePipelineStageBodySchema = z
+  .object({
+    name: z.string().trim().min(1).max(80).optional(),
+    category: z.enum(['open', 'won', 'lost']).optional(),
+    order: z.number().int().optional(),
+    isActive: z.boolean().optional(),
+  })
+  .strict();
+
+export const pipelineStageIdParamsSchema = z
+  .object({
+    id: z.string().min(1),
+  })
+  .strict();
+
+export const reorderPipelineStagesBodySchema = z
+  .object({
+    orderedIds: z.array(z.string().min(1)).min(1),
+  })
+  .strict();
+
+export const patchPricingBodySchema = z
+  .object({
+    /** Basis points, e.g. 825 = 8.25%. Max 100%. */
+    taxRateBps: z.number().int().min(0).max(10000).optional(),
+    standardLineItems: z
+      .array(
+        z
+          .object({
+            key: z
+              .string()
+              .trim()
+              .min(1)
+              .max(80)
+              .regex(/^[a-z0-9_]+$/, 'key must be lowercase alphanumeric with underscores'),
+            label: z.string().trim().min(1).max(200),
+            unit: z.string().trim().min(1).max(20),
+            unitCostCents: z.number().int().min(0).max(100_000_000),
+            kind: z.enum(['material', 'labor', 'other']),
+            active: z.boolean(),
+          })
+          .strict(),
+      )
+      .max(500)
+      .optional(),
+  })
+  .strict();

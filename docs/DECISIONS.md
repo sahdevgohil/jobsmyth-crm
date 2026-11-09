@@ -92,6 +92,7 @@ Source for all items: client brief (2026-11-04) unless stated.
 | D-033 | Phase 1 Foundation code landed using working defaults D-002–D-005, D-007, D-019, D-022, D-027; JWT via `jose`; AUTH-008 token endpoints exist but email send is disabled until INT-03 (AUTH-007 temp-password path) | Matches PROJECT §7 / TECH_STACK §14 | Confirmed (implementation 2026-11-04) |
 | D-034 | Frontend unit tests use Vitest + Testing Library (`@testing-library/react`, jsdom) for Phase 1 auth guards / permissions | Needed for AUTH-011 / forced-password FE regression without Playwright (Phase 2) | Confirmed (hardening 2026-11-05) |
 | D-035 | Phase 1 hardening V-01–V-06: atomic refresh claim, backend mustChangePassword gate, strict forgot/reset/invite rate limit, acceptInvite session revoke, pino-http header redact, local git init (CI green only after remote Actions) | Independent verification findings | Confirmed (2026-11-05) |
+| D-036 | Phase 2 Core CRM implemented using working defaults Q-002/003/005/006/028/030; MIG excluded (Q-021); website intake API shipped pending live form (Q-006); Playwright E2E gated on E2E_* env | Phase 2 plan approval | Confirmed (implementation 2026-11-05) |
 
 ## 3. Deferred Features
 

@@ -1,0 +1,15 @@
+{
+  "name": "Legacy Construction Group CRM",
+  "short_name": "Legacy CRM",
+  "description": "Customer, inspection and estimating tools for Legacy Construction Group LLC, with offline field mode.",
+  "start_url": "/app/field",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#f5f5f5",
+  "theme_color": "#303030",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

@@ -1,55 +1,36 @@
-import { EmptyState, ErrorState, LoadingState } from '@/components/shared/StatePanel';
-import { PageHeader } from '@/components/shared/PageHeader';
-import { useAuditLogs } from '@/modules/audit/api';
-import { ApiError } from '@/types/api';
+import { ListPage } from '@/components/shared/ListPage';
+import { useStaffDirectory } from '@/modules/users/api';
+
+type Audit = {
+  id: string;
+  actorType: string;
+  actorId?: string;
+  action: string;
+  entityType: string;
+  entityId: string;
+  createdAt: string;
+};
 
 export function AuditPage(): React.ReactElement {
-  const query = useAuditLogs(1);
-
+  const staff = useStaffDirectory();
+  const actor = (a: Audit): string => {
+    const u = staff.data?.data.find((x) => x.id === a.actorId);
+    return u ? `${u.firstName} ${u.lastName}` : a.actorType;
+  };
   return (
-    <div>
-      <PageHeader
-        title="Audit log"
-        description="Immutable record of important actions. Entries cannot be edited or deleted."
-      />
-      {query.isLoading ? <LoadingState /> : null}
-      {query.isError ? (
-        <ErrorState
-          message={query.error instanceof ApiError ? query.error.message : 'Failed to load audit log.'}
-          onRetry={() => void query.refetch()}
-        />
-      ) : null}
-      {query.data && query.data.data.length === 0 ? (
-        <EmptyState title="No audit entries yet" />
-      ) : null}
-      {query.data && query.data.data.length > 0 ? (
-        <div className="overflow-x-auto rounded-xl border border-border bg-card">
-          <table className="min-w-full text-left text-sm">
-            <thead className="border-b border-border bg-muted/50">
-              <tr>
-                <th className="px-4 py-3 font-medium">When</th>
-                <th className="px-4 py-3 font-medium">Action</th>
-                <th className="px-4 py-3 font-medium">Entity</th>
-                <th className="px-4 py-3 font-medium">Actor</th>
-              </tr>
-            </thead>
-            <tbody>
-              {query.data.data.map((row) => (
-                <tr key={row.id} className="border-b border-border last:border-0">
-                  <td className="px-4 py-3 whitespace-nowrap">
-                    {new Date(row.createdAt).toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3">{row.action}</td>
-                  <td className="px-4 py-3">
-                    {row.entityType} / {row.entityId}
-                  </td>
-                  <td className="px-4 py-3">{row.actorId ?? row.actorType}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : null}
-    </div>
+    <ListPage<Audit>
+      title="Audit logs"
+      description="Immutable record of important actions. Entries cannot be edited or deleted."
+      queryKey="audit-logs"
+      path="/audit-logs"
+      filters={[{ key: 'entityType', label: 'Entity', options: ['user', 'lead', 'customer', 'project', 'invoice', 'payment', 'proposal', 'estimate', 'file'].map((s) => ({ value: s, label: s })) }]}
+      emptyTitle="No audit entries"
+      columns={[
+        { key: 'w', header: 'When', render: (a) => new Date(a.createdAt).toLocaleString('en-US', { timeZone: 'America/Chicago' }) },
+        { key: 'a', header: 'Action', render: (a) => a.action },
+        { key: 'e', header: 'Entity', render: (a) => <span>{a.entityType}<span className="ml-1 font-mono text-xs text-muted-foreground">{a.entityId.slice(-6)}</span></span>, hideOnMobile: true },
+        { key: 'u', header: 'Actor', render: actor },
+      ]}
+    />
   );
 }

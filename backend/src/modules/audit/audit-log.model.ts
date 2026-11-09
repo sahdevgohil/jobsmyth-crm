@@ -3,7 +3,7 @@ import { AppError } from '../../utils/errors.js';
 
 const auditLogSchema = new Schema(
   {
-    actorType: { type: String, enum: ['user', 'system'], required: true },
+    actorType: { type: String, enum: ['user', 'system', 'customer'], required: true },
     actorId: { type: Schema.Types.ObjectId },
     action: { type: String, required: true },
     entityType: { type: String, required: true },

@@ -25,3 +25,10 @@ createRoot(root).render(
     </QueryClientProvider>
   </StrictMode>,
 );
+
+// Offline app shell. Production only, so development hot-reload is never served stale files.
+if ('serviceWorker' in navigator && import.meta.env.PROD) {
+  window.addEventListener('load', () => {
+    void navigator.serviceWorker.register('/sw.js').catch(() => undefined);
+  });
+}

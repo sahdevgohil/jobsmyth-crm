@@ -4,8 +4,9 @@ import { connectMongo } from './db/connection.js';
 import { createLogger } from './utils/logger.js';
 
 async function main(): Promise<void> {
-  loadEnv();
+  const env = loadEnv();
   const logger = createLogger();
+  logger.info({ googleSolarKeyConfigured: Boolean(env.GOOGLE_SOLAR_API_KEY) }, 'Google Solar API key');
   await connectMongo();
   const app = createApp();
   const port = Number(process.env.PORT ?? 4000);

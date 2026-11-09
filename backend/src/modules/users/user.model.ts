@@ -13,6 +13,8 @@ const userSchema = new Schema(
     receivesLeads: { type: Boolean, required: true, default: false },
     mustChangePassword: { type: Boolean, required: true, default: false },
     lastLoginAt: { type: Date },
+    /** Owning company. Absent = default company (backfilled lazily by `authenticate`). */
+    companyId: { type: Schema.Types.ObjectId, ref: 'Company' },
   },
   { timestamps: true },
 );

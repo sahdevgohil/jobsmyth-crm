@@ -1,35 +1,57 @@
 @import 'tailwindcss';
 
+/*
+ * Legacy Construction Group LLC — brand tokens (derived from the official logo).
+ * Single source of truth: components use these semantic names, never raw hex values.
+ *   primary  = charcoal   (headings, strong UI)        brand = construction red (actions, focus, highlights)
+ *   Grey #898989 is the logo grey; text uses the slightly darker `muted-foreground` for AA contrast on white.
+ */
 @theme {
-  --color-primary: #1b4d3e;
-  --color-primary-foreground: #f7faf8;
-  --color-secondary: #c4a35a;
-  --color-secondary-foreground: #1a1a1a;
-  --color-background: #f3f6f4;
-  --color-foreground: #14231d;
-  --color-muted: #e2ebe6;
-  --color-muted-foreground: #5b6b63;
+  --color-primary: #3c3c3c;
+  --color-primary-hover: #292929;
+  --color-primary-foreground: #ffffff;
+
+  --color-brand: #c32930;
+  --color-brand-hover: #a91f26;
+  --color-brand-soft: #fcefef;
+
+  --color-secondary: #fcefef;
+  --color-secondary-foreground: #a91f26;
+  --color-background: #f5f5f5;
+  --color-foreground: #303030;
+  --color-muted: #eeeeee;
+  --color-muted-foreground: #757575;
+  --color-grey: #898989;
   --color-card: #ffffff;
-  --color-border: #c9d6cf;
-  --color-destructive: #b42318;
+  --color-border: #e1e1e1;
+  --color-accent: #eeeeee;
+
+  --color-destructive: #a91f26;
   --color-destructive-foreground: #ffffff;
-  --color-accent: #dfeae4;
-  --font-sans: 'Source Sans 3', 'Segoe UI', sans-serif;
+  --color-success: #16845b;
+  --color-warning: #d99026;
+  --color-danger: #c32930;
+  --color-info: #3c3c3c;
+
+  --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-heading: 'Poppins', 'Inter', 'Segoe UI', system-ui, sans-serif;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
-
   body {
-    @apply m-0 min-h-screen bg-background font-sans text-foreground antialiased;
-    background-image:
-      radial-gradient(circle at top left, rgb(27 77 62 / 0.08), transparent 40%),
-      linear-gradient(180deg, #f7faf8 0%, #eef3f0 100%);
+    @apply m-0 min-h-screen bg-background font-sans text-sm text-foreground antialiased;
   }
-
+  h1,
+  h2 {
+    font-family: var(--font-heading);
+  }
   a {
-    @apply text-primary;
+    @apply text-brand;
+  }
+  :focus-visible {
+    outline-color: var(--color-brand);
   }
 }

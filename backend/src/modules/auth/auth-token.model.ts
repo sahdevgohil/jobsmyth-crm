@@ -3,8 +3,8 @@ import { Schema, model, type InferSchemaType, type Types } from 'mongoose';
 const authTokenSchema = new Schema(
   {
     purpose: { type: String, enum: ['password_reset', 'invite'], required: true },
-    principalType: { type: String, enum: ['user'], required: true },
-    principalId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+    principalType: { type: String, enum: ['user', 'customer'], required: true },
+    principalId: { type: Schema.Types.ObjectId, required: true },
     tokenHash: { type: String, required: true },
     expiresAt: { type: Date, required: true },
     usedAt: { type: Date },

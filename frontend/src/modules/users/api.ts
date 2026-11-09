@@ -8,8 +8,9 @@ export const userKeys = {
   list: () => [...userKeys.all, 'list'] as const,
 };
 
-export function useUsers() {
+export function useUsers(options?: { enabled?: boolean }) {
   return useQuery({
+    enabled: options?.enabled ?? true,
     queryKey: userKeys.list(),
     queryFn: () => apiFetch<UsersListResponse>('/users?page=1&pageSize=100'),
   });
@@ -39,5 +40,16 @@ export function useDeactivateUser() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: userKeys.all });
     },
+  });
+}
+
+export type StaffMember = { id: string; firstName: string; lastName: string; role: 'admin' | 'salesperson' };
+
+/** Active staff names for labels and assignee pickers (available to every signed-in staff user). */
+export function useStaffDirectory() {
+  return useQuery({
+    queryKey: ['users', 'directory'],
+    staleTime: 5 * 60_000,
+    queryFn: () => apiFetch<{ data: StaffMember[] }>('/users/directory'),
   });
 }

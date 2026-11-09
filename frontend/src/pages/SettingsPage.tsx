@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ErrorState, LoadingState } from '@/components/shared/StatePanel';
+import { BrandLogo } from '@/components/shared/BrandLogo';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -75,6 +76,12 @@ export function SettingsPage(): React.ReactElement {
         title="Company settings"
         description="Branding and defaults used across the CRM. Values come from the database, not hardcoded UI constants."
       />
+      <div className="mb-4 flex items-center gap-4 rounded-lg border border-border bg-card p-4 shadow-sm">
+        <BrandLogo height={96} />
+        <p className="text-sm text-muted-foreground">
+          Official company logo, used in the sidebar, sign-in, customer portal and all printable documents (estimates, proposals, invoices, inspection reports).
+        </p>
+      </div>
       <form
         className="grid max-w-2xl gap-4 rounded-xl border border-border bg-card p-6 sm:grid-cols-2"
         onSubmit={(e) => void onSave(e)}
@@ -132,7 +139,7 @@ export function SettingsPage(): React.ReactElement {
             }
           />
         </div>
-        {message ? <p className="text-sm text-primary sm:col-span-2">{message}</p> : null}
+        {message ? <p className="text-sm text-brand sm:col-span-2">{message}</p> : null}
         {error ? <p className="text-sm text-destructive sm:col-span-2">{error}</p> : null}
         {canUpdate ? (
           <div className="sm:col-span-2">

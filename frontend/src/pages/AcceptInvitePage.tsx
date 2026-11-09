@@ -53,7 +53,7 @@ export function AcceptInvitePage(): React.ReactElement {
         <Label htmlFor="confirmPassword">Confirm password</Label>
         <Input id="confirmPassword" type="password" {...form.register('confirmPassword')} />
       </div>
-      {message ? <p className="text-sm text-primary">{message}</p> : null}
+      {message ? <p className="text-sm text-brand">{message}</p> : null}
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       <Button type="submit" className="w-full">
         Set password

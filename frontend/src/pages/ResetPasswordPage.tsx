@@ -81,7 +81,7 @@ export function ResetPasswordPage(): React.ReactElement {
         </Button>
       </form>
 
-      {message ? <p className="text-sm text-primary">{message}</p> : null}
+      {message ? <p className="text-sm text-brand">{message}</p> : null}
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
       <p className="text-center text-sm">
         <Link to="/login">Back to sign in</Link>

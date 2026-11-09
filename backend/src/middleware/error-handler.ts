@@ -35,6 +35,21 @@ export function errorHandler(
     return;
   }
 
+  const bodyParserType =
+    typeof err === 'object' && err !== null && 'type' in err
+      ? (err as { type?: unknown }).type
+      : undefined;
+  if (bodyParserType === 'entity.too.large') {
+    res.status(413).json({
+      error: {
+        code: 'PAYLOAD_TOO_LARGE',
+        message: 'Request body is too large.',
+        requestId: req.requestId,
+      },
+    });
+    return;
+  }
+
   req.log?.error({ err, requestId: req.requestId }, 'Unhandled error');
   res.status(500).json({
     error: {

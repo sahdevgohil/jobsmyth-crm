@@ -6,10 +6,15 @@ import { validate } from '../../middleware/validate.js';
 import * as controller from './settings.controller.js';
 import {
   createLookupBodySchema,
+  createPipelineStageBodySchema,
   lookupIdParamsSchema,
   lookupTypeParamsSchema,
   patchCompanyBodySchema,
+  patchPricingBodySchema,
+  pipelineStageIdParamsSchema,
+  reorderPipelineStagesBodySchema,
   updateLookupBodySchema,
+  updatePipelineStageBodySchema,
 } from './settings.validation.js';
 
 export const settingsRouter = Router();
@@ -53,5 +58,49 @@ settingsRouter.patch(
   validate({ params: lookupIdParamsSchema, body: updateLookupBodySchema }),
   (req, res, next) => {
     void controller.updateLookup(req, res).catch(next);
+  },
+);
+
+settingsRouter.get('/pipeline-stages', authorize('settings:read'), (req, res, next) => {
+  void controller.listPipelineStages(req, res).catch(next);
+});
+
+settingsRouter.post(
+  '/pipeline-stages',
+  authorize('pipeline_stages:manage'),
+  validate({ body: createPipelineStageBodySchema }),
+  (req, res, next) => {
+    void controller.createPipelineStage(req, res).catch(next);
+  },
+);
+
+settingsRouter.post(
+  '/pipeline-stages/reorder',
+  authorize('pipeline_stages:manage'),
+  validate({ body: reorderPipelineStagesBodySchema }),
+  (req, res, next) => {
+    void controller.reorderPipelineStages(req, res).catch(next);
+  },
+);
+
+settingsRouter.patch(
+  '/pipeline-stages/:id',
+  authorize('pipeline_stages:manage'),
+  validate({ params: pipelineStageIdParamsSchema, body: updatePipelineStageBodySchema }),
+  (req, res, next) => {
+    void controller.updatePipelineStage(req, res).catch(next);
+  },
+);
+
+settingsRouter.get('/pricing', authorize('pricing:manage'), (req, res, next) => {
+  void controller.getPricing(req, res).catch(next);
+});
+
+settingsRouter.patch(
+  '/pricing',
+  authorize('pricing:manage'),
+  validate({ body: patchPricingBodySchema }),
+  (req, res, next) => {
+    void controller.patchPricing(req, res).catch(next);
   },
 );

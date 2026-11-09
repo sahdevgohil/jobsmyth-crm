@@ -5,6 +5,7 @@ export function RequireAuth(): React.ReactElement {
   const accessToken = useAuthStore((s) => s.accessToken);
   const user = useAuthStore((s) => s.user);
   const bootstrapped = useAuthStore((s) => s.bootstrapped);
+  const offline = useAuthStore((s) => s.offline);
   const location = useLocation();
 
   if (!bootstrapped) {
@@ -13,6 +14,12 @@ export function RequireAuth(): React.ReactElement {
         Loading session…
       </div>
     );
+  }
+
+  if (offline && user) {
+    // Offline session: only field mode works (it reads from this device). Everything else needs the server.
+    if (!location.pathname.startsWith('/app/field')) return <Navigate to="/app/field" replace />;
+    return <Outlet />;
   }
 
   if (!accessToken || !user) {

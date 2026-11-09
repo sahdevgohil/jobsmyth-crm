@@ -2,8 +2,8 @@ import { Schema, model, type InferSchemaType, type Types } from 'mongoose';
 
 const refreshSessionSchema = new Schema(
   {
-    principalType: { type: String, enum: ['user'], required: true },
-    principalId: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+    principalType: { type: String, enum: ['user', 'customer'], required: true },
+    principalId: { type: Schema.Types.ObjectId, required: true },
     tokenHash: { type: String, required: true },
     familyId: { type: String, required: true },
     expiresAt: { type: Date, required: true },

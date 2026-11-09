@@ -49,18 +49,34 @@ export async function acceptInviteRequest(token: string, newPassword: string): P
   });
 }
 
-export async function bootstrapSession(): Promise<string | null> {
-  try {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/refresh`, {
-      method: 'POST',
-      credentials: 'include',
+/** True when the last bootstrap failed because the server could not be reached (not because the session was rejected). */
+export let lastBootstrapWasNetworkFailure = false;
+let inflightBootstrap: Promise<string | null> | null = null;
+
+/**
+ * Restores a session from the refresh cookie. Refresh tokens rotate and a reused token revokes the whole
+ * session family, so concurrent callers (React StrictMode runs effects twice in development) MUST share
+ * a single in-flight request.
+ */
+export function bootstrapSession(): Promise<string | null> {
+  if (!inflightBootstrap) {
+    inflightBootstrap = (async () => {
+      try {
+        lastBootstrapWasNetworkFailure = false;
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/refresh`, {
+          method: 'POST',
+          credentials: 'include',
+        });
+        if (!res.ok) return null;
+        const json = (await res.json()) as { data: { accessToken: string } };
+        return json.data.accessToken;
+      } catch {
+        lastBootstrapWasNetworkFailure = true;
+        return null;
+      }
+    })().finally(() => {
+      inflightBootstrap = null;
     });
-    if (!res.ok) {
-      return null;
-    }
-    const json = (await res.json()) as { data: { accessToken: string } };
-    return json.data.accessToken;
-  } catch {
-    return null;
   }
+  return inflightBootstrap;
 }

@@ -10,6 +10,10 @@ Thumbs.db
 *.tsbuildinfo
 frontend/dist/
 backend/dist/
+backend/storage/
 .vite/
 playwright-report/
 test-results/
+.devdb/
+.mongo-data/
+.mongo-data-dev/

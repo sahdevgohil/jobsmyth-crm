@@ -2,7 +2,7 @@ import type { ClientSession, Types } from 'mongoose';
 import { AuditLogModel } from '../modules/audit/audit-log.model.js';
 
 export type AuditInput = {
-  actorType: 'user' | 'system';
+  actorType: 'user' | 'system' | 'customer';
   actorId?: Types.ObjectId | string;
   action: string;
   entityType: string;

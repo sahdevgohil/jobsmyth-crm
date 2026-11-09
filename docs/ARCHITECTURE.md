@@ -354,11 +354,13 @@ Base path: `/api/v1`. JSON only. Resource-oriented nouns, plural. Actions that a
 |---|---|
 | `/auth` | **Phase 1:** `POST login`, `POST refresh`, `POST logout`, `GET me`, `POST password/change`, `POST password/forgot`, `POST password/reset`, `POST invites/accept` (email delivery disabled until INT-03) |
 | `/users` | **Phase 1:** `GET /`, `GET /:id`, `POST /`, `PATCH /:id`, `POST /:id/deactivate` |
-| `/settings` | **Phase 1:** `GET/PATCH /company`, `GET/POST /lookups/:type`, `PATCH /lookups/:type/:id`. Later: `/pipeline-stages`, `/payment-schedule-templates`, `/checklist-templates` |
+| `/settings` | **Phase 1:** `GET/PATCH /company`, `GET/POST /lookups/:type`, `PATCH /lookups/:type/:id`. **Phase 2:** `GET/POST /pipeline-stages`, `POST /pipeline-stages/reorder`, `PATCH /pipeline-stages/:id`. Later: `/payment-schedule-templates`, `/checklist-templates` |
 | `/audit-logs` | **Phase 1:** `GET /` (admin, filterable) |
-| `/leads` | list/create/get/update, `POST duplicate-check`, `POST /:id/stage`, `POST /:id/assign`, `POST /:id/convert` |
-| `/activities` | list by entity, create, `POST /:id/complete` |
-| `/customers`, `/properties` | CRUD, `POST /customers/:id/archive`, `GET /customers/:id/summary` |
+| `/leads` | **Phase 2:** list/create/get/update, `POST duplicate-check`, `POST /:id/stage`, `POST /:id/assign`, `POST /:id/convert` |
+| `/activities` | **Phase 2:** list by entity, create, `POST /:id/complete` |
+| `/customers`, `/properties` | **Phase 2:** CRUD, `POST /customers/:id/archive`, `GET /customers/:id/summary`, nested properties |
+| `/notifications` | **Phase 2:** list, unread-count, `POST /:id/read`, `POST read-all` |
+| `/analytics` | **Phase 2:** `GET /dashboard` (lead/customer tiles) |
 | `/appointments` | list by range/assignee, CRUD, `POST /:id/cancel`, `POST /:id/complete` |
 | `/files` | `POST upload-intents`, `POST /:id/confirm`, list by context, `GET /:id/url`, `PATCH /:id` (tags, caption, annotations), `DELETE /:id` |
 | `/inspections`, `/photo-reports` | CRUD; `POST /photo-reports` (enqueue), `GET /photo-reports/:id` |
@@ -375,7 +377,7 @@ Base path: `/api/v1`. JSON only. Resource-oriented nouns, plural. Actions that a
 | `/warranties`, `/feedback` | CRUD, `POST /feedback/review-requests` |
 | `/analytics` | `GET dashboard`, `GET reports/:reportKey` |
 | `/portal/*` | `auth/*`, `projects`, `estimates/:id`, `estimates/:id/accept`, `reports`, `invoices`, `invoices/:id/checkout-session`, `warranties` |
-| `/public/website-leads` | `POST` (shared secret) |
+| `/public/website-leads` | **Phase 2:** `POST` (header `X-Website-Lead-Secret`, honeypot, idempotent `submissionId`) |
 | `/webhooks/:provider` | `stripe`, `twilio`, `signatures`, `measurements` |
 
 ## 10. File Upload Workflow
